@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>AntarctiCrafts Website</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="/img/favicon.ico" rel="icon">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="css/all.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner"></div>
+    </div>
+    <!-- Spinner End -->
+
+
+    
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid position-relative p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0" style="background: #1c2538;padding: 0.5% 2% !important;">
+            <a href="index.php.html" class="navbar-brand p-0">
+                <h1 class="m-0"><img src="img/logo.png" style=" height: 50px; margin-top: -4%; ">AntarctiCrafts</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+        </nav>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Contact Start -->
+    <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="section-title text-center position-relative pb-3 mb-5 mx-auto" style="max-width: 600px;">
+                <h1 class="mb-0">Login</h1>
+                <h2><%= message %></h2>
+            </div>
+            <div class="row g-5">
+                <div class="col-lg-12 wow slideInUp" data-wow-delay="0.3s">
+                    <form action="login.php.html" method="POST" id="loginForm">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="col-12">
+                                    <input type="text" name="username" class="form-control border-0 bg-light px-4" placeholder="Username" style="height: 55px;">
+                                </div>
+                                <div class="col-12">
+                                    <input type="password" name="password" class="form-control border-0 bg-light px-4" placeholder="Password" style="height: 55px;">
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">Submit</button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <img class="w-100" src="img/login.svg" style=" max-height: 200px; ">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row g-5">
+                <div id="qrcode-container"></div>
+                <input type="text" id="token-input" placeholder="Ingrese el código generado">
+                <button onclick="verifyToken()">Verificar Código</button>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+
+    
+    
+
+    <!-- Footer Start -->
+    <div class="container-fluid text-white" style="background: #061429;">
+        <div class="container text-center">
+            <div class="d-flex align-items-center justify-content-center" style="height: 75px;">
+                <p class="mb-0">&copy; AntarctiCrafts All Rights Reserved. </p>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.js"></script>
+    <script>
+        async function generate2FA() {
+          const response = await fetch('/generate-2fa');
+          const data = await response.json();
+      
+          return new Promise((resolve, reject) => {
+            try {
+                const qrCode = new QRCode(document.getElementById('qrcode-container'), {
+                    text: data.dataURL,
+                    width: 200,
+                    height: 200,
+                });
+
+                console.log('QR Code:', qrCode);
+                console.log('Data:', data);
+
+                // Esperar a que la imagen del código QR esté lista antes de resolver la promesa
+                const imgElement = document.querySelector('#qrcode-container img');
+                imgElement.onload = () => {
+                    resolve(data.secret);
+                };
+            } catch (error) {
+                reject(error);
+            }
+          });
+        }
+      
+        async function verifyToken() {
+          try {
+            const secret = await generate2FA();
+            const token = document.getElementById('token-input').value;
+      
+            const response = await fetch('/verify-2fa', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ secret, token }),
+            });
+      
+            const result = await response.json();
+      
+            alert(result.message);
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        }
+      
+        // Añade este código para manejar la generación de 2FA después de enviar el formulario
+        document.getElementById('loginForm').addEventListener('submit', async function (event) {
+          event.preventDefault();
+          try {
+            const secret = await generate2FA();
+            // Puedes hacer algo con el secreto si es necesario
+            console.log('Secret:', secret);
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        });
+      </script>
+      
+
+
+    <!-- JavaScript Libraries -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>
