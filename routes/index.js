@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const mongojs = require('mongojs')
-const db = mongojs('mongodb://localhost:27017/test', ['sgssi'])
+const db = mongojs('mongodb://127.0.0.1:27017/test', ['sgssi'])
 const speakeasy = require('speakeasy');
 
 
