@@ -70,6 +70,9 @@
                                     <input type="password" name="password" class="form-control border-0 bg-light px-4" placeholder="Password" style="height: 55px;">
                                 </div>
                                 <div class="col-12">
+                                    <input type="text" name="token" class="form-control border-0 bg-light px-4" placeholder="Token" style="height: 55px;">
+                                </div>
+                                <div class="col-12">
                                     <button class="btn btn-primary w-100 py-3" type="submit">Submit</button>
                                 </div>
                             </div>
@@ -79,11 +82,6 @@
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="row g-5">
-                <div id="qrcode-container"></div>
-                <input type="text" id="token-input" placeholder="Ingrese el código generado">
-                <button onclick="verifyToken()">Verificar Código</button>
             </div>
         </div>
     </div>
@@ -103,70 +101,7 @@
     </div>
     <!-- Footer End -->
 
-
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.js"></script>
-    <script>
-        async function generate2FA() {
-          const response = await fetch('/generate-2fa');
-          const data = await response.json();
-      
-          return new Promise((resolve, reject) => {
-            try {
-                const qrCode = new QRCode(document.getElementById('qrcode-container'), {
-                    text: data.dataURL,
-                    width: 200,
-                    height: 200,
-                });
-
-                console.log('QR Code:', qrCode);
-                console.log('Data:', data);
-
-                // Esperar a que la imagen del código QR esté lista antes de resolver la promesa
-                const imgElement = document.querySelector('#qrcode-container img');
-                imgElement.onload = () => {
-                    resolve(data.secret);
-                };
-            } catch (error) {
-                reject(error);
-            }
-          });
-        }
-      
-        async function verifyToken() {
-          try {
-            const secret = await generate2FA();
-            const token = document.getElementById('token-input').value;
-      
-            const response = await fetch('/verify-2fa', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ secret, token }),
-            });
-      
-            const result = await response.json();
-      
-            alert(result.message);
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        }
-      
-        // Añade este código para manejar la generación de 2FA después de enviar el formulario
-        document.getElementById('loginForm').addEventListener('submit', async function (event) {
-          event.preventDefault();
-          try {
-            const secret = await generate2FA();
-            // Puedes hacer algo con el secreto si es necesario
-            console.log('Secret:', secret);
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        });
-      </script>
-      
-
 
     <!-- JavaScript Libraries -->
     <script src="js/jquery.min.js"></script>
